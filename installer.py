@@ -1,54 +1,62 @@
-import time
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import getpass
 import os
+import time
+
+from progress.bar import ChargingBar
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
-from selenium.common.exceptions import NoSuchElementException
-from progress.bar import Bar, ChargingBar
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
+
+# defining all the variables
 ChargingBar = ChargingBar('Processing', max=10)
-default_timeout = 300 # 300 seconds
-home_dir = "/home/devops"
-# Enter sudo password to continue script running
-sudo_pass = getpass.getpass(prompt='Enter your sudo password:')
-os.system('rm -rf geckodriver-v0.31.0-linux64.tar.gz')
-ChargingBar.next()
-# downloading geckodriver to run selenium
-os.system('wget https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz >> installer.log 2>&1')
-os.system('rm -rf geckodriver')
-os.system('tar -xvf geckodriver-v0.31.0-linux64.tar.gz >> installer.log 2>&1')
-os.system('cp '+home_dir+'/docker-compose.yml ./')
-ChargingBar.next()
-os.system('docker-compose up -d >> installer.log 2>&1')
+default_timeout = 300  # 300 seconds
+duplicator_dir = "/home/devops"
+gecko_driver_url = "https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz"
+gecko_driver_zip = "geckodriver-v0.31.0-linux64.tar.gz"
+grocer_url = "http://185.207.250.107"
+os.system(f'rm -rf {gecko_driver_zip}  >> installer.log 2>&1')
 
+"""
+Enter sudo password to continue script running needed for smoothly running docker and changing the permissions of files on the mount volume
+"""
+sudo_pass = getpass.getpass(prompt='Enter your sudo password:')
+ChargingBar.next()
+
+# downloading geckodriver to run selenium
+os.system(
+    f'wget {gecko_driver_url} >> installer.log 2>&1')
+os.system('rm -rf geckodriver  >> installer.log 2>&1')
+os.system(f'tar -xvf {gecko_driver_zip} >> installer.log 2>&1')
+os.system(f'cp {duplicator_dir}/docker-compose.yml ./')
+ChargingBar.next()
+
+# Running the docker containers
+os.system('docker-compose up -d >> installer.log 2>&1')
 os.system('echo %s|sudo -S %s' % (sudo_pass, 'rm -rf httpd/*'))
-os.system('echo %s|sudo -S %s' % (sudo_pass, 'cp /home/devops/installer.php ./httpd/ >> installer.log 2>&1'))
-os.system('echo %s|sudo -S %s' % (sudo_pass, 'cp /home/devops/20220802_grocery_85474e13dfd57eb02214_20220802061632_archive.zip ./httpd/ >> installer.log 2>&1'))
+os.system('echo %s|sudo -S %s' % (sudo_pass, f'cp {duplicator_dir}/installer.php ./httpd/ >> installer.log 2>&1'))
+os.system('echo %s|sudo -S %s' % (sudo_pass,
+                                  f'cp {duplicator_dir}/20220802_grocery_85474e13dfd57eb02214_20220802061632_archive.zip ./httpd/ >> installer.log 2>&1'))
 os.system('docker-compose down >> installer.log 2>&1')
 ChargingBar.next()
 os.system('docker-compose up -d >> installer.log 2>&1')
 time.sleep(10)
 ChargingBar.next()
-# starting selenium as a headless mode
 
+
+
+
+# starting selenium as a headless mode
 options = FirefoxOptions()
 options.add_argument("--headless")
 browser = webdriver.Firefox(options=options)
-#options = Options()
-#options.headless = True
-#browser = webdriver.Firefox(options=options)
 time.sleep(30)
-browser.get('http://185.207.250.107/installer.php')
+browser.get(f'{grocer_url}/installer.php')
 ChargingBar.next()
-# delay = 3   # seconds
 timeout = 100
 try:
     elem0 = EC.presence_of_element_located((By.ID, 'param_item_secure-archive'))
@@ -102,4 +110,4 @@ try:
 except TimeoutException:
     print("Loading 4 took too much time!")
 ChargingBar.finish()
-
+print(f"Grocer has been successfully installed.!!!\nNow you can open URL : {grocer_url} in your browser and use it")
