@@ -15,11 +15,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 # defining all the variables
 ChargingBar = ChargingBar('Processing', max=10)
 default_timeout = 300  # 300 seconds
-duplicator_dir = "/home/devops"
-gecko_driver_url = "https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz"
-gecko_driver_zip = "geckodriver-v0.31.0-linux64.tar.gz"
+duplicator_dir = "./"
+
 grocer_url = "http://185.207.250.107"
-os.system(f'rm -rf {gecko_driver_zip}  >> installer.log 2>&1')
+
 
 """
 Enter sudo password to continue script running needed for smoothly running docker and changing the permissions of files on the mount volume
@@ -28,10 +27,16 @@ sudo_pass = getpass.getpass(prompt='Enter your sudo password:')
 ChargingBar.next()
 
 # downloading geckodriver to run selenium
+""" 
+# not needed as gecko driver will be installed by ansible
+gecko_driver_url = "https://github.com/mozilla/geckodriver/releases/download/v0.31.0/geckodriver-v0.31.0-linux64.tar.gz"
+gecko_driver_zip = "geckodriver-v0.31.0-linux64.tar.gz"
+os.system(f'rm -rf {gecko_driver_zip}  >> installer.log 2>&1')
 os.system(
     f'wget {gecko_driver_url} >> installer.log 2>&1')
 os.system('rm -rf geckodriver  >> installer.log 2>&1')
 os.system(f'tar -xvf {gecko_driver_zip} >> installer.log 2>&1')
+"""
 os.system(f'cp {duplicator_dir}/docker-compose.yml ./')
 ChargingBar.next()
 
