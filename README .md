@@ -9,25 +9,73 @@ This project is based on python selenium, the project will automate the installa
 
 ## Prerequisites
 
-- Mozilla Firefox 106.0
+- Install Mozilla Firefox
+```bash
+ $ sudo apt install firefox 
+```
 
-- docker-compose version 1.25.1-rc1, build d92e9bee
+- Install docker engine and docker compose
+Update the apt package index and install packages to allow apt to use a repository over HTTPS:
+```bash
+ $ sudo apt-get update 
 
-- Docker version 20.10.18, build b40c2f6
+ $ sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+```
+Add Docker’s official GPG key:
+```bash
+ $ sudo mkdir -p /etc/apt/keyrings
+ $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+```
+Use the following command to set up the repository:
+```bash
+ $ echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null 
+```
+Update the apt package index, and install the latest version of Docker Engine, containerd, and Docker Compose
+```bash
+ $ sudo apt-get update
+ $ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+- Install Python 3.10
+```bash
+ $ sudo apt update && sudo apt upgrade -y
+ $ sudo apt install software-properties-common -y
+ $ sudo add-apt-repository ppa:deadsnakes/ppa
+ ```
+ Press Enter to continue.
+ ```bash
+ $ sudo apt install python3.10
+```
+Install gecko driver
+```bash
+ $ wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
+ $ tar -xvf geckodriver-v0.31.0-linux64.tar.gz
+ $ mv geckodriver /usr/bin/
+```
+Install installer.php
+```bash
+ $ wget https://softwaremathematicscom-my.sharepoint.com/:u:/g/personal/salesh_softwaremathematics_com/EWxiwPR6XX5FrgStA3Ekq6IBST-Ekgfxm4mIg94F-gRUTQ?e=hotWTn
+```
 
-- Python version 3.10
+ 
 
-- Python Selenium latest version (which you can install by pip3 install selenium) 
+### Python packages
 
-- Python progress libarary (which you can install by pip3 install progress)
+- Selenium
+```bash
+ $ pip3 install selenium 
+```
 
-- geckodriver 0.31.0 (which you can install by https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz)
+- Progress
+```bash
+ $ pip3 install progress 
+```
 
-- docker-compose file
-
-- installer.php file (which you can get by https://softwaremathematicscom-my.sharepoint.com/:u:/g/personal/salesh_softwaremathematics_com/EWxiwPR6XX5FrgStA3Ekq6IBST-Ekgfxm4mIg94F-gRUTQ?e=19Ijrm)
-
-- A .zip backup file of your wordpress site that can be downloaded from here : https://softwaremathematicscom-my.sharepoint.com/:u:/g/personal/salesh_softwaremathematics_com/EbjxEGVTptBGqGFfInwdROkBPMbSOOqU1636hH-ALdLt8A?e=FT0nll
 ## System Requirements
 
 - Any Linux 64 bit OS (Debian, Fedora)
@@ -50,6 +98,16 @@ it will take around 5 to 10 minutes ("depends on your system specification and i
 ```bash
  Processing |@@@@@@@@@@@@@                   | 42%
 ```
+Now launch your browser and search
+```bash
+ http://localhost/
+```
+
+Or if you are performing this on a remote server search
+```bash
+ http://<your-server-ip>/
+```
+
 
 
 
