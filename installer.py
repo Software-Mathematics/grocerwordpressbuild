@@ -1,4 +1,3 @@
-import getpass
 import os
 import time
 
@@ -13,8 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 # defining all the variables
-ChargingBar = ChargingBar('Processing', max=10)
-default_timeout = 300  # 300 seconds
+ChargingBar = ChargingBar('Processing', max=68)
+default_timeout = 400  # 300 seconds
 duplicator_dir = "./"
 
 grocer_url = "http://185.207.250.107"
@@ -23,7 +22,7 @@ grocer_url = "http://185.207.250.107"
 """
 Enter sudo password to continue script running needed for smoothly running docker and changing the permissions of files on the mount volume
 """
-sudo_pass = getpass.getpass(prompt='Enter your sudo password:')
+#sudo_pass = getpass.getpass(prompt='Enter your sudo password:')
 ChargingBar.next()
 
 # downloading geckodriver to run selenium
@@ -37,19 +36,22 @@ os.system(
 os.system('rm -rf geckodriver  >> installer.log 2>&1')
 os.system(f'tar -xvf {gecko_driver_zip} >> installer.log 2>&1')
 """
-os.system(f'cp {duplicator_dir}/docker-compose.yml ./')
+os.system(f'cp {duplicator_dir}/docker-compose.yml ./ >> installer.log 2>&1')
 ChargingBar.next()
 
 # Running the docker containers
 os.system('docker-compose up -d >> installer.log 2>&1')
-os.system('echo %s|sudo -S %s' % (sudo_pass, 'rm -rf httpd/*'))
-os.system('echo %s|sudo -S %s' % (sudo_pass, f'cp {duplicator_dir}/installer.php ./httpd/ >> installer.log 2>&1'))
-os.system('echo %s|sudo -S %s' % (sudo_pass,
-                                  f'cp {duplicator_dir}/20220802_grocery_85474e13dfd57eb02214_20220802061632_archive.zip ./httpd/ >> installer.log 2>&1'))
-os.system('docker-compose down >> installer.log 2>&1')
+for i in range(30):
+    ChargingBar.next()
+    time.sleep(1)
+#os.system('echo %s|sudo -S %s' % (sudo_pass, 'rm -rf httpd/*'))
+os.system(f'cp {duplicator_dir}/installer.php ./httpd/ >> installer.log 2>&1')
+os.system(f'cp {duplicator_dir}/20220802_grocery_85474e13dfd57eb02214_20220802061632_archive.zip ./httpd/ >> installer.log 2>&1')
+#os.system('docker-compose down >> installer.log 2>&1')
+os.system(f'chown -R www-data:www-data httpd/ >> installer.log 2>&1')
 ChargingBar.next()
-os.system('docker-compose up -d >> installer.log 2>&1')
-time.sleep(10)
+#os.system('docker-compose up -d >> installer.log 2>&1')
+#time.sleep(10)
 ChargingBar.next()
 
 
@@ -59,7 +61,9 @@ ChargingBar.next()
 options = FirefoxOptions()
 options.add_argument("--headless")
 browser = webdriver.Firefox(options=options)
-time.sleep(30)
+for i in range(5):
+    ChargingBar.next()
+    time.sleep(1)
 browser.get(f'{grocer_url}/installer.php')
 ChargingBar.next()
 timeout = 100
@@ -72,7 +76,7 @@ try:
     submit_button.send_keys(Keys.RETURN)
     ChargingBar.next()
 except TimeoutException:
-    print("Loading took too much time!")
+    print("Page 1 loading took too much time!")
 timeout = 1000
 try:
     dbhost = EC.presence_of_element_located((By.NAME, 'dbhost'))
@@ -90,7 +94,7 @@ try:
     validate_button.send_keys(Keys.RETURN)
     ChargingBar.next()
 except TimeoutException:
-    print("Loading 2 took too much time!")
+    print("Page 2 loading too much time!")
 timeout = 1000
 try:
     radio_btn = EC.element_to_be_clickable((By.NAME, 'accept-warnings'))
@@ -101,7 +105,7 @@ try:
     next_button.send_keys(Keys.RETURN)
     ChargingBar.next()
 except TimeoutException:
-    print("Loading 3 took too much time!")
+    print("Page 3 loading took too much time!")
 
 timeout = 100
 try:
@@ -109,10 +113,10 @@ try:
     WebDriverWait(browser, timeout).until(ok_button)
     ok_button = browser.find_element(By.ID, 'db-install-dialog-confirm-button')
     ok_button.send_keys(Keys.RETURN)
-    time.sleep(45)
-    ChargingBar.next()
-    ChargingBar.next()
+    for i in range(45):
+        ChargingBar.next()
+        time.sleep(1)
 except TimeoutException:
-    print("Loading 4 took too much time!")
+    print("Page 1 loading took too much time!")
 ChargingBar.finish()
 print(f"Grocer has been successfully installed.!!!\nNow you can open URL : {grocer_url} in your browser and use it")
